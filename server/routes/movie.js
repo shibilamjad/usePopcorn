@@ -50,7 +50,6 @@ router.post("/", async (req, res) => {
 });
 
 //Update Movie with Genre (dashboard)
-
 router.put("/updateMovie&genre/:movieId", async (req, res) => {
   try {
     const movieId = req.params.movieId;

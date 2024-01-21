@@ -33,4 +33,46 @@ router.post("/", async (req, res) => {
   }
 });
 
+//update genre
+router.put("/", async (req, res) => {
+  try {
+    const { _id, title } = req.body;
+    const updateGenre = await Genre.findByIdAndUpdate(
+      _id,
+      { title },
+      {
+        new: true,
+      }
+    );
+    if (updateGenre) {
+      res.status(200).json(updateGenre);
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+    });
+  }
+});
+
+//delete genre
+router.delete("/", async (req, res) => {
+  try {
+    const { _id, title } = req.body;
+    const deleteGenre = await Genre.findByIdAndDelete(
+      _id,
+      { title },
+      {
+        new: true,
+      }
+    );
+    if (deleteGenre) {
+      res.status(200).json(deleteGenre);
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+    });
+  }
+});
+
 module.exports = router;
