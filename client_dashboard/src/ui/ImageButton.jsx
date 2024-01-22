@@ -9,11 +9,6 @@ export function ImageButton() {
     setAddImage(selectedFile);
   }
 
-  // useEffect(() => {
-  //   if (addImage) {
-  //     console.log(addImage.name);
-  //   }
-  // }, [addImage]);
   return (
     <>
       <button>

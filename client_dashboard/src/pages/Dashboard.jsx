@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { MovieList } from "../components/MovieList";
+import { MovieList } from "../features/dashboard/MovieList";
 
 export function Dashboard() {
   return (

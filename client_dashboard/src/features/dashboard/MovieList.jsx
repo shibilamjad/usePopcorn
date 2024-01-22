@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { device } from "../ui/device";
+import { device } from "../../ui/device";
 
 export function MovieList() {
   return (

@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { HiCalendarDays, HiHome, HiHomeModern } from "react-icons/hi2";
-import { device } from "../ui/device";
+import { device } from "./device";
 
 function MainNav() {
   return (

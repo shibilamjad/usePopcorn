@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import MainNav from "./MainNav";
-import { device } from "../ui/device";
+import { device } from "./device";
 
 export function SideBar() {
   return (
