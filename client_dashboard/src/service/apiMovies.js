@@ -25,13 +25,3 @@ export async function createMovieApi(newGenre) {
     throw new Error("Genre could not be created");
   }
 }
-
-export async function getGenre() {
-  try {
-    const res = await axios("http://localhost:3006/api/genres");
-    const { data } = res;
-    return data;
-  } catch (error) {
-    console.error(error.message);
-  }
-}

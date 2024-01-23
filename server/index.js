@@ -6,6 +6,7 @@ const userRoute = require("./routes/user");
 const movieRoute = require("./routes/movie");
 const genreRoute = require("./routes/genre");
 require("dotenv").config();
+
 connectDb();
 
 //meddleware setup

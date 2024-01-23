@@ -9,6 +9,10 @@ const movieSchema = new mongoose.Schema({
     lowercase: true,
     required: true,
   },
+  image: {
+    type: String,
+    required: true,
+  },
   ratings: {
     type: Number,
     min: 0,

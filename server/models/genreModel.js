@@ -7,6 +7,7 @@ const genreSchema = new mongoose.Schema({
     maxLength: 255,
     minLength: 2,
     required: true,
+    unique: [true, "No duplicate values allowed"],
   },
 });
 

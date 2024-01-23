@@ -1,37 +1,30 @@
 const router = require("express").Router();
-
+const multer = require("multer");
 const {
   movie,
-  addMovie,
-  updateMovie,
+  // addMovie,
   deleteMovie,
+  movieGenre,
+  updateMovie,
+  // upload,
+  addMovie,
 } = require("../controller/movieController");
-const Movies = require("../models/movieModel");
+
+const upload = multer({ dest: "uploads/" });
 
 router.get("/", movie);
 
 //get all movies with genre *(dashboard)
-
-router.get("/genre", async (req, res) => {
-  try {
-    const movieList = await Movies.find()
-      .select("title ratings genre")
-      .populate("genre");
-
-    res.status(200).json(movieList);
-  } catch (error) {
-    res.status(400).json({
-      message: error.message,
-    });
-  }
-});
+router.get("/genre", movieGenre);
 
 // movie create (dashboard)
+router.post("/upload", addMovie);
 
-router.post("/", addMovie);
+// movie create (dashboard)
+router.put("/updateMovie/:movieId", updateMovie);
 
 //Update Movie with Genre (dashboard)
-router.put("/updateMovie&genre/:movieId", updateMovie);
+// router.put("/updateMovie&genre/:movieId", updateMovie);
 
 router.delete("/", deleteMovie);
 
