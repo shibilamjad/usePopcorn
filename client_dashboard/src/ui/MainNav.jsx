@@ -1,7 +1,8 @@
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-import { HiCalendarDays, HiHome, HiHomeModern } from "react-icons/hi2";
+import { HiHome, HiHomeModern } from "react-icons/hi2";
 import { device } from "./device";
+import { FaFolderPlus, FaIdCard } from "react-icons/fa6";
 
 function MainNav() {
   return (
@@ -17,13 +18,14 @@ function MainNav() {
         </li>
         <li>
           <StyledNavLink to="/movie">
-            <HiCalendarDays />
+            <FaIdCard />
+
             <span>Movie</span>
           </StyledNavLink>
         </li>
         <li>
           <StyledNavLink to="/genre">
-            <HiHomeModern />
+            <FaFolderPlus />
             <span>Genre</span>
           </StyledNavLink>
         </li>
@@ -103,13 +105,13 @@ const StyledNavLink = styled(NavLink)`
     transition: all 0.3s;
 
     @media ${device.laptopL} {
-      font-size: 1rem;
+      font-size: 1.2rem;
       font-weight: 500;
       padding: 0.6rem 1rem;
       transition: all 0.5;
     }
     @media ${device.laptop} {
-      font-size: 1rem;
+      font-size: 1.2rem;
       padding: 0.6rem 1rem;
       transition: all 0.5;
     }

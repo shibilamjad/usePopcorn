@@ -6,11 +6,6 @@ export function Dashboard() {
     <>
       <StyledMovieList>
         <MovieList />
-        <MovieList />
-        <MovieList />
-        <MovieList />
-        <MovieList />
-        <MovieList />
       </StyledMovieList>
     </>
   );

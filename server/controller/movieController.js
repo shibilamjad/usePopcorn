@@ -1,6 +1,7 @@
 const upload = require("../middleware/multer");
 const cloudinaryImg = require("../config/cloudinery");
 const Movies = require("../models/movieModel");
+const Genres = require("../models/genreModel");
 
 const movie = async (req, res) => {
   try {
@@ -26,46 +27,39 @@ const movieGenre = async (req, res) => {
     });
   }
 };
+const util = require("util");
+const uploadAsync = util.promisify(upload.single("image"));
 
 const addMovie = async (req, res) => {
   try {
-    upload.single("image")(req, res, async function (error) {
-      try {
-        if (error) {
-          throw new Error(`Error uploading file: ${error.message}`);
-        }
+    await uploadAsync(req, res);
 
-        const cloudinaryResult = await cloudinaryImg.uploader.upload(
-          req.file.path
-        );
-        const { secure_url: image } = cloudinaryResult;
+    const cloudinaryResult = await cloudinaryImg.uploader.upload(req.file.path);
+    const { secure_url: image } = cloudinaryResult;
 
-        const { title, ratings, genre } = req.body;
-        const isExistMovie = await Movies.findOne({ title });
+    const { title, ratings, genre } = req.body;
+    const isExistMovie = await Movies.findOne({ title });
 
-        if (isExistMovie) {
-          return res.status(400).json({
-            message: `${title} already created`,
-          });
-        }
+    if (isExistMovie) {
+      return res.status(400).json({
+        message: `${title} already created`,
+      });
+    }
 
-        const newMovie = await Movies.create({
-          title,
-          ratings,
-          image,
-          genre: Array.isArray(genre) ? genre : [genre],
-        });
-
-        return res.status(200).json(newMovie);
-      } catch (error) {
-        res.status(500).json({
-          message: `Error adding movie: ${error.message}`,
-        });
-      }
+    const genreIds = await Genres.find({ title: { $in: genre } }).distinct(
+      "_id"
+    );
+    const newMovie = await Movies.create({
+      title,
+      ratings,
+      image,
+      genre: genreIds,
     });
+
+    return res.status(200).json(newMovie);
   } catch (error) {
     res.status(500).json({
-      message: `Error handling file upload: ${error.message}`,
+      message: `Error adding movie: ${error.message}`,
     });
   }
 };

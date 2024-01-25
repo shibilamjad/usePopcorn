@@ -1,40 +1,47 @@
 import Modal from "../../ui/Modal";
 import { device } from "../../ui/device";
-// import { InputCheckBox } from "../../ui/InputCheckBox";
 import { Button } from "../../ui/Button";
 import styled from "styled-components";
 import { useState } from "react";
-// import { useGenre } from "../genre/useGenre";
-// import { data } from "autoprefixer";
 import { useForm } from "react-hook-form";
-import { useMovieGenre } from "./useMovieGenre";
 import { Loader } from "../../ui/Loader";
 import { useGenre } from "../genre/useGenre";
+import { useMovieCreate } from "../dashboard/useMovieCreate";
+import axios from "axios";
 
 export function CreateMovie() {
-  const [range, setRange] = useState(0);
-  const [step, setStep] = useState(1);
-  const [addImage, setAddImage] = useState(null);
-
-  const { register, handleSubmit, reset } = useForm();
-
+  const [imageUrl, setImageUrl] = useState(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset,
+  } = useForm();
+  const { createMovie } = useMovieCreate();
   const { genre, isLoading } = useGenre();
-  // const { movieGenre, isLoading } = useMovieGenre();
-  // console.log(genre);
-  // console.log(movieGenre);
+  // const { errors } = formState;
 
-  function handleAddimg(e) {
+  const watchImage = watch("image"); // Watch the "image" field
+
+  const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    setAddImage(selectedFile);
-  }
-
-  function handleMove(e) {
-    setRange(e.target.value);
-    setStep(1);
-  }
-
-  function onSubmit(data) {
-    console.log(data);
+    if (selectedFile) {
+      setValue("image", selectedFile); // Set the value of the "image" field in the form
+    }
+  };
+  const onSubmit = async (data) => {
+    try {
+      await createMovie(data);
+    } catch (error) {
+      console.error("Error creating movie:", error.message);
+    } finally {
+      reset();
+    }
+  };
+  function onError(errors) {
+    console.log(errors);
   }
 
   if (isLoading) return <Loader />;
@@ -42,21 +49,30 @@ export function CreateMovie() {
   return (
     <Modal>
       <h1 className="p-2 text-2xl">Edit / Create Movie</h1>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <button>
-          <Label>
-            <Input
-              type="file"
-              id="image"
-              accept="image/*"
-              onChange={handleAddimg}
+      <Form
+        onSubmit={handleSubmit(onSubmit, onError)}
+        // encType="multipart/form-data"
+      >
+        <Label>
+          <Input
+            type="file"
+            id="image"
+            accept="image/*"
+            onChange={handleFileChange}
+            {...register("image", {
+              required: "This field is required",
+            })}
+          />
+          <p>Upload image</p>
+          {watchImage && watchImage.length > 0 && (
+            <Img
+              src={URL.createObjectURL(watchImage[0])}
+              alt="Uploaded preview"
             />
-            <p>Upload image</p>
-            {addImage && (
-              <Img src={URL.createObjectURL(addImage)} alt={addImage.name} />
-            )}
-          </Label>
-        </button>
+          )}
+        </Label>
+
+        <P>{errors?.image?.message}</P>
         <div>
           <p>Title</p>
           <InputText
@@ -67,6 +83,7 @@ export function CreateMovie() {
               required: "This field is required",
             })}
           />
+          <P>{errors?.title?.message}</P>
         </div>
         <StyledRange>
           <p>Rating</p>
@@ -74,11 +91,10 @@ export function CreateMovie() {
             type="range"
             min={1}
             max={5}
-            id="rating"
+            id="ratings"
             defaultValue={1}
             className="range bg-slate-100 "
-            step={step}
-            {...register("rating", { required: "This field is required" })}
+            {...register("ratings", { required: "This field is required" })}
           />
           <div className="w-full flex justify-between  px-2">
             <span>1</span>
@@ -94,8 +110,8 @@ export function CreateMovie() {
               <div key={items._id}>
                 <input
                   type="checkbox"
-                  name={items.title}
-                  value={items.title}
+                  name={items._id}
+                  value={items._id}
                   id={items._id}
                   className="checkbox checkbox-secondery bg-white "
                   {...register("genre", {
@@ -109,8 +125,9 @@ export function CreateMovie() {
               </div>
             ))}
           </StyledGenre>
+          <P className="px-24">{errors?.genre?.message}</P>
         </div>
-        <Button>Submit</Button>
+        <Button type="submit">Submit</Button>
       </Form>
     </Modal>
   );
@@ -157,6 +174,12 @@ const Label = styled.label`
     margin-top: 120px;
     opacity: 0.2;
   }
+`;
+const P = styled.p`
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  color: red;
 `;
 
 const InputText = styled.input`
@@ -216,7 +239,7 @@ const StyledGenre = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  gap: 20px;
+  justify-content: start;
+  padding: 0 90px;
+  gap: 10px;
 `;

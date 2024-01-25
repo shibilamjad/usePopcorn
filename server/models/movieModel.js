@@ -19,10 +19,12 @@ const movieSchema = new mongoose.Schema({
     max: 5,
     required: true,
   },
+
   genre: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Genres",
+      required: true,
     },
   ],
 });

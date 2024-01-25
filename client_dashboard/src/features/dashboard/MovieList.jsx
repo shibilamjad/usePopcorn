@@ -1,26 +1,49 @@
 import styled from "styled-components";
 import { device } from "../../ui/device";
+import { useMovies } from "./useMovies";
+import { HiPencil, HiTrash } from "react-icons/hi2";
+import { Loader } from "../../ui/Loader";
+import { useDeleteMovie } from "./useMovieDelete";
+import { Empty } from "../../ui/Empty";
 
 export function MovieList() {
+  const { movies, isLoading } = useMovies();
+  const { deleteMovie } = useDeleteMovie();
+  console.log(movies);
+  if (isLoading) return <Loader />;
+
+  if (movies.length === 0) return <Empty>Please upload movies</Empty>;
   return (
-    <StyledCard className="card bg-indigo-800 shadow-xl ">
-      <figure>
-        <img
-          src="https://marketplace.canva.com/EAFDOGkiqeA/1/0/566w/canva-green-brown-classic-action-adventure-movie-poster-6aDrK-XK3-U.jpg"
-          alt="movie"
-        />
-      </figure>
-      <div className="card-body">
-        <h2 className="card-title">Avengers</h2>
-        <div>
-          <div className="badge badge-secondary">Heror</div>
-          <div className="badge badge-secondary">action</div>
-          <div className="badge badge-secondary">Heror</div>
-        </div>
-        <MovieDescription>sadsadasdcasd asdadsada sadaSd</MovieDescription>
-        <p>⭐⭐⭐⭐</p>
-      </div>
-    </StyledCard>
+    <>
+      {movies.map((movie) => (
+        <StyledCard key={movie._id} className="card bg-indigo-800 shadow-xl ">
+          <figure>
+            <img src={movie.image} alt={movie.title} />
+          </figure>
+          <div className="card-body">
+            <h2 className="card-title">{movie.title}</h2>
+            <div>
+              {movie.genre &&
+                movie.genre.map((genre) => (
+                  <div key={genre._id} className="badge badge-secondary">
+                    {genre.title}
+                  </div>
+                ))}
+            </div>
+            <p>⭐⭐⭐⭐</p>
+            <StyledButton>
+              <button>
+                <HiPencil />
+              </button>
+              <button onClick={() => deleteMovie(movie._id)}>
+                <HiTrash />
+              </button>
+            </StyledButton>
+          </div>
+          <div></div>
+        </StyledCard>
+      ))}
+    </>
   );
 }
 
@@ -31,36 +54,35 @@ const StyledCard = styled.div`
   transition: all 0.5;
   img {
     width: 400px;
-    height: auto;
-    object-fit: contain;
+    height: 500px;
+
     @media ${device.laptopL} {
       width: 300px;
-      height: auto;
-      object-fit: contain;
+      height: 500px;
+
       transition: all 0.5;
     }
     @media ${device.laptop} {
       width: 250px;
-      height: auto;
-      object-fit: contain;
+      height: 500px;
       transition: all 0.5;
     }
     @media ${device.tablet} {
       width: 200px;
       height: 400px;
-      object-fit: contain;
+
       transition: all 0.5;
     }
     @media ${device.mobileL} {
       width: auto;
       height: 400px;
-      object-fit: contain;
+
       transition: all 0.5;
     }
     @media ${device.mobileS} {
       width: auto;
       height: 400px;
-      object-fit: contain;
+
       transition: all 0.5;
     }
   }
@@ -85,12 +107,16 @@ const StyledCard = styled.div`
     transition: all 0.5;
   }
   @media ${device.mobileS} {
-    width: auto;
+    width: 400px;
     height: 400px;
     transition: all 0.5;
   }
 `;
-const MovieDescription = styled.p`
-  font-size: 12px;
-  color: #c5caff;
+
+const StyledButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 20px;
+  font-size: 20px;
 `;
