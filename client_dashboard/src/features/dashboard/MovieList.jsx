@@ -5,118 +5,161 @@ import { HiPencil, HiTrash } from "react-icons/hi2";
 import { Loader } from "../../ui/Loader";
 import { useDeleteMovie } from "./useMovieDelete";
 import { Empty } from "../../ui/Empty";
+import ReactStars from "react-rating-stars-component";
+import { useMovieUpdateContext } from "../../context/MovieUpdateContext";
+import { useNavigate } from "react-router-dom";
 
 export function MovieList() {
   const { movies, isLoading } = useMovies();
   const { deleteMovie } = useDeleteMovie();
-  console.log(movies);
+  const {
+    isEditing,
+    selectedMovieId,
+    setIsEditing,
+    selectedMovie,
+    setSelectedMovie,
+    setSelectedMovieId,
+  } = useMovieUpdateContext();
+  const navigate = useNavigate();
+
+  function onEditMovie(movieId) {
+    setIsEditing(true);
+    setSelectedMovieId(movieId);
+    const selected = movies.find((item) => item._id === movieId);
+    setSelectedMovie(selected);
+    navigate(`/movie/${movieId}`);
+  }
+  // console.log(selectedMovie);
+  // console.log(selectedMovieId);
+
   if (isLoading) return <Loader />;
 
   if (movies.length === 0) return <Empty>Please upload movies</Empty>;
   return (
     <>
       {movies.map((movie) => (
-        <StyledCard key={movie._id} className="card bg-indigo-800 shadow-xl ">
-          <figure>
-            <img src={movie.image} alt={movie.title} />
-          </figure>
-          <div className="card-body">
-            <h2 className="card-title">{movie.title}</h2>
-            <div>
-              {movie.genre &&
-                movie.genre.map((genre) => (
-                  <div key={genre._id} className="badge badge-secondary">
-                    {genre.title}
-                  </div>
-                ))}
-            </div>
-            <p>⭐⭐⭐⭐</p>
-            <StyledButton>
-              <button>
-                <HiPencil />
-              </button>
-              <button onClick={() => deleteMovie(movie._id)}>
-                <HiTrash />
-              </button>
-            </StyledButton>
-          </div>
-          <div></div>
-        </StyledCard>
+        <Box key={movie._id}>
+          <StyledCard>
+            <StledContainer>
+              <div>
+                <Img src={movie.image} alt={movie.title} />
+              </div>
+              <StyledContent>
+                <h2 className="card-title">{movie.title}</h2>
+                <StyledGenre>
+                  {movie.genre &&
+                    movie.genre.map((genre) => (
+                      <div key={genre._id} className="badge badge-secondary ">
+                        {genre.title}
+                      </div>
+                    ))}
+                </StyledGenre>
+                <ReactStars
+                  count={5}
+                  size={24}
+                  value={movie.ratings}
+                  edit={false}
+                  activeColor="#ffd700"
+                />
+
+                <StyledButton>
+                  <Button onClick={() => onEditMovie(movie._id)}>
+                    <HiPencil />
+                  </Button>
+                  <Button onClick={() => deleteMovie(movie._id)}>
+                    <HiTrash />
+                  </Button>
+                </StyledButton>
+              </StyledContent>
+            </StledContainer>
+          </StyledCard>
+        </Box>
       ))}
     </>
   );
 }
+const Box = styled.div`
+  width: 400px;
+  background-color: #3730a3;
+  border-radius: 10px;
 
-const StyledCard = styled.div`
-  margin: 10px;
-  width: 300px;
-  height: 600px;
-  transition: all 0.5;
-  img {
-    width: 400px;
-    height: 500px;
-
-    @media ${device.laptopL} {
-      width: 300px;
-      height: 500px;
-
-      transition: all 0.5;
-    }
-    @media ${device.laptop} {
-      width: 250px;
-      height: 500px;
-      transition: all 0.5;
-    }
-    @media ${device.tablet} {
-      width: 200px;
-      height: 400px;
-
-      transition: all 0.5;
-    }
-    @media ${device.mobileL} {
-      width: auto;
-      height: 400px;
-
-      transition: all 0.5;
-    }
-    @media ${device.mobileS} {
-      width: auto;
-      height: 400px;
-
-      transition: all 0.5;
-    }
-  }
   @media ${device.laptopL} {
-    width: 300px;
-    height: 600px;
+    width: 400px;
+
     transition: all 0.5;
   }
   @media ${device.laptop} {
-    width: 250px;
-    height: 500px;
+    width: 400px;
+
     transition: all 0.5;
   }
   @media ${device.tablet} {
-    width: 200px;
-    height: 400px;
+    width: 400px;
+
     transition: all 0.5;
   }
   @media ${device.mobileL} {
-    width: auto;
-    height: 400px;
+    width: 260px;
+    height: 100%;
     transition: all 0.5;
   }
   @media ${device.mobileS} {
-    width: 400px;
-    height: 400px;
+    width: 260px;
+    height: 100%;
     transition: all 0.5;
   }
 `;
 
+const StyledCard = styled.div`
+  width: 100%;
+  height: 290px;
+  border-radius: 10px;
+  transition: all 0.5s;
+  img {
+    width: 100%;
+    height: 290px;
+    border-radius: 10px 0 0 10px;
+  }
+`;
+const Img = styled.img`
+  width: 100%;
+  height: 100%;
+`;
+const StledContainer = styled.div`
+  display: grid;
+  border-radius: 10px;
+  grid-template-columns: 1fr 1fr;
+`;
+const StyledContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  /* align-items: start; */
+  justify-content: space-between;
+  gap: 10px;
+  /* margin-top: 20px; */
+`;
+
+const StyledGenre = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: start;
+`;
 const StyledButton = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: end;
   gap: 20px;
   font-size: 20px;
+`;
+const Button = styled.button`
+  padding: 5px;
+  border-radius: 4px;
+  &:focus,
+  &:hover {
+    background-color: #fff;
+    color: #3730a3;
+    transition: background-color 0.5s ease;
+  }
 `;

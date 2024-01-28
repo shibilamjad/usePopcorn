@@ -2,7 +2,6 @@ const upload = require("../middleware/multer");
 const cloudinaryImg = require("../config/cloudinery");
 const Movies = require("../models/movieModel");
 const Genres = require("../models/genreModel");
-const util = require("util");
 
 const movie = async (req, res) => {
   try {
@@ -28,10 +27,11 @@ const movieGenre = async (req, res) => {
     });
   }
 };
+const util = require("util");
+const uploadAsync = util.promisify(upload.single("image"));
 
 const addMovie = async (req, res) => {
   try {
-    const uploadAsync = util.promisify(upload.single("image"));
     await uploadAsync(req, res);
 
     const cloudinaryResult = await cloudinaryImg.uploader.upload(req.file.path);
@@ -47,11 +47,22 @@ const addMovie = async (req, res) => {
       });
     }
 
+    // Find genre IDs based on titles
+    // const genreObjects = await Genres.find({ title: { $in: genre } }).select(
+    //   "_id"
+    // );
+
+    // // Convert array of documents to array of objects with _id property
+    // const genreIds = genreObjects.map((genre) => ({ _id: genre._id }));
+    // // Log the retrieved genre IDs
+    // console.log("Retrieved Genre IDs:", genreIds);
+
     const newMovie = await Movies.create({
       title,
       ratings,
       image,
-      genre: JSON.parse(genre),
+      genre,
+      // genre: genreIds,
     });
 
     return res.status(200).json(newMovie);
@@ -84,11 +95,19 @@ const updateMovie = async (req, res) => {
         const cloudinaryResult = await cloudinaryImg.uploader.upload(
           req.file.path
         );
-        const { secure_url: image } = cloudinaryResult;
+        const { secure_url: newImage } = cloudinaryResult;
+
+        const isExist = await Movies.findOne({ title });
+
+        if (isExist) {
+          return res.status(409).json({
+            message: "Movie with the provided title already exists",
+          });
+        }
 
         const updatedMovie = await Movies.findByIdAndUpdate(
           movieId,
-          { title, ratings, image, genre: JSON.parse(genre) },
+          { title, ratings, image: newImage, genre },
           {
             new: true,
             upsert: true,

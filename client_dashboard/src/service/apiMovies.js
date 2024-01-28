@@ -13,18 +13,13 @@ export async function getMovies() {
     throw new Error("Movie could not be retrieved");
   }
 }
-
 export async function uploadMovieApi(data) {
   try {
     const formData = new FormData();
-    formData.append("image", data.image[0]); // Assuming 'image' is a file input
+    formData.append("image", data.image[0]);
     formData.append("title", data.title);
     formData.append("ratings", data.ratings);
-    // formData.append("genre", data.genre);
-    formData.append(
-      "genre",
-      Array.isArray(data.genre) ? data.genre.join(",") : data.genre
-    );
+    formData.append("genre", JSON.stringify(data.genre));
 
     const res = await axios.post(`${API_URL}/upload`, formData, {
       headers: {
@@ -32,11 +27,33 @@ export async function uploadMovieApi(data) {
       },
     });
 
-    const dataResponse = res.data;
-    return dataResponse;
+    return res.data;
   } catch (error) {
-    console.error(error.message);
-    throw new Error("Movie cloud not be created");
+    console.error("Error uploading movie:", error.message);
+    throw new Error(`Movie could not be created: ${error.message}`);
+  }
+}
+export async function updateMovieApi(movieId, image, title, ratings, genre) {
+  try {
+    const formData = new FormData();
+    formData.append("image", image[0]);
+    formData.append("title", title);
+    formData.append("ratings", ratings);
+    formData.append("genre", JSON.stringify(genre));
+    const res = await axios.put(`${API_URL}/updateMovie/${movieId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    if (error.response && error.response.status === 409) {
+      throw new Error("Movie title already exists");
+    }
+
+    throw new Error("Movie could not be created");
   }
 }
 

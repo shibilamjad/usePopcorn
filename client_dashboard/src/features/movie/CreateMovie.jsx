@@ -2,56 +2,82 @@ import Modal from "../../ui/Modal";
 import { device } from "../../ui/device";
 import { Button } from "../../ui/Button";
 import styled from "styled-components";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Loader } from "../../ui/Loader";
 import { useGenre } from "../genre/useGenre";
-import { useMovieCreate } from "../dashboard/useMovieCreate";
-import axios from "axios";
+
+import { useEffect, useState } from "react";
+import { useMovieCreate } from "./useMovieCreate";
+import { useMovieUpdate } from "./useMovieUpdate";
+import { useMovieUpdateContext } from "../../context/MovieUpdateContext";
 
 export function CreateMovie() {
-  const [imageUrl, setImageUrl] = useState(null);
+  const { updateMovie } = useMovieUpdate();
+  const { createMovie } = useMovieCreate();
+  const { genre, isLoading } = useGenre();
+
+  const { isEditing, setIsEditing, selectedMovie, selectedMovieId } =
+    useMovieUpdateContext();
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
     setValue,
-    watch,
     reset,
-  } = useForm();
-  const { createMovie } = useMovieCreate();
-  const { genre, isLoading } = useGenre();
-  // const { errors } = formState;
+    watch,
+  } = useForm({
+    defaultValues: isEditing ? selectedMovie : {},
+  });
 
+  // const navigate = useNavigate();
   const watchImage = watch("image"); // Watch the "image" field
 
+  console.log(watchImage);
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
+
     if (selectedFile) {
       setValue("image", selectedFile); // Set the value of the "image" field in the form
     }
   };
-  const onSubmit = async (data) => {
-    try {
-      await createMovie(data);
-    } catch (error) {
-      console.error("Error creating movie:", error.message);
-    } finally {
+
+  function onSubmit(data) {
+    if (isEditing) {
+      const { title, ratings, genre, image } = data;
+      // const image = typeof data.image === "string" ? data.image : data.image[0];
+      updateMovie({
+        movieId: selectedMovieId,
+        image,
+        title,
+        ratings,
+        genre,
+      });
+    } else {
+      createMovie(data);
+    }
+    // console.log(data);
+  }
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      <Loader />;
       reset();
     }
-  };
+  }, [isSubmitSuccessful, reset]);
+
   function onError(errors) {
     console.log(errors);
   }
 
   if (isLoading) return <Loader />;
-  console.log();
+
   return (
     <Modal>
       <h1 className="p-2 text-2xl">Edit / Create Movie</h1>
       <Form
         onSubmit={handleSubmit(onSubmit, onError)}
-        // encType="multipart/form-data"
+        encType="multipart/form-data"
       >
         <Label>
           <Input
@@ -60,16 +86,33 @@ export function CreateMovie() {
             accept="image/*"
             onChange={handleFileChange}
             {...register("image", {
-              required: "This field is required",
+              required: isEditing ? false : "This field is required",
             })}
           />
           <p>Upload image</p>
-          {watchImage && watchImage.length > 0 && (
+          {isEditing && (
             <Img
+              key={selectedMovie.image}
+              src={selectedMovie.image}
+              alt="Uploaded preview"
+            />
+          )}
+
+          {!isEditing && watchImage && watchImage.length > 0 && (
+            <Img
+              key={watchImage[0].name}
               src={URL.createObjectURL(watchImage[0])}
               alt="Uploaded preview"
             />
           )}
+          {/* 
+          {isEditing && watchImage && watchImage.length > 0 && (
+            <Img
+              key={watchImage[0].name}
+              src={selectedMovie.image || URL.createObjectURL(watchImage[0])}
+              alt="Uploaded preview"
+            />
+          )} */}
         </Label>
 
         <P>{errors?.image?.message}</P>
@@ -78,6 +121,7 @@ export function CreateMovie() {
           <InputText
             type="text"
             id="title"
+            // defaultValue={isEditing ? selectedMovie.title : ""}
             placeholder="Tilte..."
             {...register("title", {
               required: "This field is required",
@@ -92,7 +136,7 @@ export function CreateMovie() {
             min={1}
             max={5}
             id="ratings"
-            defaultValue={1}
+            // defaultValue={isEditing ? selectedMovie.ratings : 1}
             className="range bg-slate-100 "
             {...register("ratings", { required: "This field is required" })}
           />
@@ -110,12 +154,23 @@ export function CreateMovie() {
               <div key={items._id}>
                 <input
                   type="checkbox"
-                  name={items._id}
+                  name="genreIds"
                   value={items._id}
                   id={items._id}
+                  defaultChecked={
+                    isEditing &&
+                    selectedMovie.genre &&
+                    selectedMovie.genre
+                      .map((selectedGenre) => selectedGenre._id)
+                      .includes(items._id)
+                  }
                   className="checkbox checkbox-secondery bg-white "
                   {...register("genre", {
-                    required: "This field is required",
+                    validate: (value) => {
+                      return (
+                        value.length <= 4 || "Maximum 4 genres can be selected"
+                      );
+                    },
                   })}
                 />
 
