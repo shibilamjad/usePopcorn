@@ -12,14 +12,8 @@ import { useNavigate } from "react-router-dom";
 export function MovieList() {
   const { movies, isLoading } = useMovies();
   const { deleteMovie } = useDeleteMovie();
-  const {
-    isEditing,
-    selectedMovieId,
-    setIsEditing,
-    selectedMovie,
-    setSelectedMovie,
-    setSelectedMovieId,
-  } = useMovieUpdateContext();
+  const { setIsEditing, setSelectedMovie, setSelectedMovieId } =
+    useMovieUpdateContext();
   const navigate = useNavigate();
 
   function onEditMovie(movieId) {
@@ -29,8 +23,6 @@ export function MovieList() {
     setSelectedMovie(selected);
     navigate(`/movie/${movieId}`);
   }
-  // console.log(selectedMovie);
-  // console.log(selectedMovieId);
 
   if (isLoading) return <Loader />;
 

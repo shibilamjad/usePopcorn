@@ -6,18 +6,39 @@ import { useForm } from "react-hook-form";
 import { Loader } from "../../ui/Loader";
 import { useGenre } from "../genre/useGenre";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useMovieCreate } from "./useMovieCreate";
 import { useMovieUpdate } from "./useMovieUpdate";
 import { useMovieUpdateContext } from "../../context/MovieUpdateContext";
+import { useNavigate } from "react-router-dom";
 
 export function CreateMovie() {
+  const navigate = useNavigate();
   const { updateMovie } = useMovieUpdate();
   const { createMovie } = useMovieCreate();
   const { genre, isLoading } = useGenre();
 
   const { isEditing, setIsEditing, selectedMovie, selectedMovieId } =
     useMovieUpdateContext();
+
+  // const isEditSession = Boolean(selectedMovieId);
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors, isSubmitSuccessful },
+  //   setValue,
+  //   reset,
+  //   watch,
+  // } = useForm({
+  //   defaultValues: isEditSession
+  //     ? {
+  //         _id: selectedMovie._id || "",
+  //         image: selectedMovie.image || "",
+  //         title: selectedMovie.title || "",
+  //         ratings: selectedMovie.ratings || 1,
+  //       }
+  //     : {},
+  // });
 
   const {
     register,
@@ -26,14 +47,9 @@ export function CreateMovie() {
     setValue,
     reset,
     watch,
-  } = useForm({
-    defaultValues: isEditing ? selectedMovie : {},
-  });
+  } = useForm();
 
-  // const navigate = useNavigate();
   const watchImage = watch("image"); // Watch the "image" field
-
-  console.log(watchImage);
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
 
@@ -42,29 +58,25 @@ export function CreateMovie() {
     }
   };
 
-  function onSubmit(data) {
+  async function onSubmit(data) {
     if (isEditing) {
-      const { title, ratings, genre, image } = data;
-      // const image = typeof data.image === "string" ? data.image : data.image[0];
       updateMovie({
         movieId: selectedMovieId,
-        image,
-        title,
-        ratings,
-        genre,
+        updateMovie: { ...data },
+        onSuccess: (data) => {
+          reset();
+        },
       });
+      navigate("/dashboard");
+      setIsEditing(false);
     } else {
-      createMovie(data);
+      await createMovie(data, {
+        onSuccess: (data) => {
+          reset();
+        },
+      });
     }
-    // console.log(data);
   }
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      <Loader />;
-      reset();
-    }
-  }, [isSubmitSuccessful, reset]);
 
   function onError(errors) {
     console.log(errors);
@@ -74,7 +86,9 @@ export function CreateMovie() {
 
   return (
     <Modal>
-      <h1 className="p-2 text-2xl">Edit / Create Movie</h1>
+      <h1 className="p-2 text-2xl">
+        {isEditing ? "Edit Movies" : "Create Movies"}
+      </h1>
       <Form
         onSubmit={handleSubmit(onSubmit, onError)}
         encType="multipart/form-data"
@@ -90,29 +104,21 @@ export function CreateMovie() {
             })}
           />
           <p>Upload image</p>
+
           {isEditing && (
             <Img
-              key={selectedMovie.image}
+              key={watchImage && watchImage[0].name}
               src={selectedMovie.image}
-              alt="Uploaded preview"
+              alt={isEditing ? "Default Image" : "Uploaded preview"}
             />
           )}
-
-          {!isEditing && watchImage && watchImage.length > 0 && (
+          {watchImage && watchImage.length > 0 && (
             <Img
-              key={watchImage[0].name}
-              src={URL.createObjectURL(watchImage[0])}
-              alt="Uploaded preview"
+              key={watchImage && watchImage[0].name}
+              src={URL.createObjectURL(watchImage && watchImage[0])}
+              alt={isEditing ? "Default Image" : "Uploaded preview"}
             />
           )}
-          {/* 
-          {isEditing && watchImage && watchImage.length > 0 && (
-            <Img
-              key={watchImage[0].name}
-              src={selectedMovie.image || URL.createObjectURL(watchImage[0])}
-              alt="Uploaded preview"
-            />
-          )} */}
         </Label>
 
         <P>{errors?.image?.message}</P>
@@ -121,7 +127,7 @@ export function CreateMovie() {
           <InputText
             type="text"
             id="title"
-            // defaultValue={isEditing ? selectedMovie.title : ""}
+            defaultValue={isEditing ? selectedMovie.title : ""}
             placeholder="Tilte..."
             {...register("title", {
               required: "This field is required",
@@ -136,7 +142,7 @@ export function CreateMovie() {
             min={1}
             max={5}
             id="ratings"
-            // defaultValue={isEditing ? selectedMovie.ratings : 1}
+            defaultValue={isEditing ? selectedMovie.ratings : 1}
             className="range bg-slate-100 "
             {...register("ratings", { required: "This field is required" })}
           />
@@ -227,7 +233,6 @@ const Label = styled.label`
     align-items: center;
     justify-content: center;
     margin-top: 120px;
-    opacity: 0.2;
   }
 `;
 const P = styled.p`

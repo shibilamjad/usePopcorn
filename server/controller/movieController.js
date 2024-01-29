@@ -65,48 +65,54 @@ const addMovie = async (req, res) => {
 const updateMovie = async (req, res) => {
   try {
     const movieId = req.params.movieId;
+    const uploadAsync = util.promisify(upload.single("image"));
+    await uploadAsync(req, res);
+
+    let image;
+
+    if (req.file) {
+      const cloudinaryResult = await cloudinaryImg.uploader.upload(
+        req.file.path
+      );
+      // const { secure_url: image } = cloudinaryResult;
+      image = cloudinaryResult.secure_url;
+    }
+
     const { title, ratings, genre } = req.body;
 
-    const existingMovie = await Movies.findById(movieId);
+    let updateObject = { title, ratings, genre: JSON.parse(genre) };
 
-    if (!existingMovie) {
+    if (image) {
+      updateObject.image = image;
+    }
+    // }
+
+    // if (title !== undefined) {
+    //   updateObject.title = title;
+    // }
+    // if (ratings !== undefined) {
+    //   updateObject.ratings = ratings;
+    // }
+    // if (genre !== undefined) {
+    //   updateObject.genre = JSON.parse(genre);
+    // }
+
+    const updatedMovie = await Movies.findByIdAndUpdate(movieId, updateObject, {
+      new: true,
+    });
+
+    if (!updatedMovie) {
       return res.status(404).json({
         message: "Movie not found",
       });
     }
 
-    upload.single("image")(req, res, async function (error) {
-      try {
-        if (error) {
-          throw new Error(`Error uploading file: ${error.message}`);
-        }
-
-        const cloudinaryResult = await cloudinaryImg.uploader.upload(
-          req.file.path
-        );
-        const { secure_url: image } = cloudinaryResult;
-
-        const updatedMovie = await Movies.findByIdAndUpdate(
-          movieId,
-          { title, ratings, image, genre: JSON.parse(genre) },
-          {
-            new: true,
-            upsert: true,
-          }
-        );
-
-        res.status(200).json(updatedMovie);
-      } catch (error) {
-        res.status(500).json({
-          message: `Error updating movie: ${error.message}`,
-        });
-      }
-    });
+    return res.status(200).json(updatedMovie);
   } catch (error) {
-    console.error(error);
+    console.error("Error updating movie:", error);
+    // Log the error using a logging library in a production environment
     res.status(500).json({
-      message: "Internal server error",
-      error: error.message,
+      message: `Error updating movie: ${error.message || "Unknown error"}`,
     });
   }
 };

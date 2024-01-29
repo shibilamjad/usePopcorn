@@ -6,9 +6,9 @@ export function useMovieUpdate() {
   const queryClient = useQueryClient();
 
   const { mutate: updateMovie } = useMutation({
-    mutationFn: ({ movieId, image, title, ratings, genre }) =>
-      updateMovieApi(movieId, image, title, ratings, genre),
-    onSuccess: () => {
+    mutationFn: (data) => updateMovieApi(data.movieId, data.updateMovie),
+    onSuccess: (data) => {
+      console.log("Update Movie Success:", data);
       toast.success("Movie successfully updated");
       queryClient.invalidateQueries({ queryKey: ["movies"] });
     },

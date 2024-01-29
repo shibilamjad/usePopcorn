@@ -33,13 +33,14 @@ export async function uploadMovieApi(data) {
     throw new Error(`Movie could not be created: ${error.message}`);
   }
 }
-export async function updateMovieApi(movieId, image, title, ratings, genre) {
+export async function updateMovieApi(movieId, data) {
   try {
     const formData = new FormData();
-    formData.append("image", image[0]);
-    formData.append("title", title);
-    formData.append("ratings", ratings);
-    formData.append("genre", JSON.stringify(genre));
+    formData.append("image", data.image[0]);
+    formData.append("title", data.title);
+    formData.append("ratings", data.ratings);
+    formData.append("genre", JSON.stringify(data.genre));
+
     const res = await axios.put(`${API_URL}/updateMovie/${movieId}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",

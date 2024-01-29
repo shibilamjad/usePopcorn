@@ -61,6 +61,7 @@ router.put("/addWatchLater/:userId", async (req, res) => {
       },
       { new: true }
     );
+    res.status(200).json(usersList);
   } catch (error) {
     res.status(400).json({
       message: error.message,
