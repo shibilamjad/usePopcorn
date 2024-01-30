@@ -8,6 +8,7 @@ const {
   updateMovie,
   // upload,
   addMovie,
+  movies,
 } = require("../controller/movieController");
 
 const upload = multer({ dest: "uploads/" });
@@ -16,6 +17,7 @@ router.get("/", movie);
 
 //get all movies with genre *(dashboard)
 router.get("/genre", movieGenre);
+router.get("/all", movies);
 
 // movie create (dashboard)
 router.post("/upload", addMovie);

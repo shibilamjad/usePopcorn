@@ -15,6 +15,36 @@ const movie = async (req, res) => {
   }
 };
 
+const movies = async (req, res) => {
+  try {
+    const { page, limit = 6 } = req.query;
+    try {
+      let skip = 0;
+      if (page > 1) {
+        skip = +limit * (page - 1);
+      }
+      const movieList = await Movies.find()
+        .select("title ratings genre image")
+        .populate("genre")
+        .skip(skip)
+        .limit(limit);
+
+      const moviesCount = await Movies.countDocuments({});
+      const pageCount = Math.ceil(moviesCount / limit) || 1;
+      res.status(200).json({ movieList, pageCount });
+    } catch (error) {
+      res.json({
+        message: error.message,
+      });
+    }
+
+    // res.status(200).json(movieList);
+  } catch (error) {
+    res.status(500).json({
+      message: `Error fetching movies by genre: ${error.message}`,
+    });
+  }
+};
 const movieGenre = async (req, res) => {
   try {
     const movieList = await Movies.find()
@@ -85,17 +115,6 @@ const updateMovie = async (req, res) => {
     if (image) {
       updateObject.image = image;
     }
-    // }
-
-    // if (title !== undefined) {
-    //   updateObject.title = title;
-    // }
-    // if (ratings !== undefined) {
-    //   updateObject.ratings = ratings;
-    // }
-    // if (genre !== undefined) {
-    //   updateObject.genre = JSON.parse(genre);
-    // }
 
     const updatedMovie = await Movies.findByIdAndUpdate(movieId, updateObject, {
       new: true,
@@ -149,4 +168,5 @@ module.exports = {
   addMovie,
   updateMovie,
   deleteMovie,
+  movies,
 };
