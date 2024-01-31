@@ -17,7 +17,7 @@ const movie = async (req, res) => {
 
 const movies = async (req, res) => {
   try {
-    const { page, limit = 6 } = req.query;
+    const { page = 1, limit = 8 } = req.query;
     try {
       let skip = 0;
       if (page > 1) {
@@ -27,11 +27,11 @@ const movies = async (req, res) => {
         .select("title ratings genre image")
         .populate("genre")
         .skip(skip)
-        .limit(limit);
-
+        .limit(limit)
+        .exec();
       const moviesCount = await Movies.countDocuments({});
       const pageCount = Math.ceil(moviesCount / limit) || 1;
-      res.status(200).json({ movieList, pageCount });
+      res.status(200).json({ movieList, pageCount, page });
     } catch (error) {
       res.json({
         message: error.message,
