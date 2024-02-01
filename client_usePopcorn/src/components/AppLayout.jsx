@@ -7,13 +7,15 @@ function AppLayout() {
   return (
     <>
       <StyledContainer>
-        <Header />
+        <GapHeader>
+          <Header />
+        </GapHeader>
         <Main>
           <Outlet />
         </Main>
-        <Gap>
+        <GapFooter>
           <Footer />
-        </Gap>
+        </GapFooter>
       </StyledContainer>
     </>
   );
@@ -34,12 +36,24 @@ const Main = styled.main`
   scroll-behavior: smooth;
   height: 100vh;
   background-color: var(--color-blacklight);
-  padding-top: 40px;
+  /* padding-top: 40px; */
   &::-webkit-scrollbar {
     display: none;
   }
 `;
-const Gap = styled.div`
+const GapFooter = styled.div`
   padding-top: 40px;
   background-color: var(--color-blacklight);
 `;
+const GapHeader = styled.div`
+  padding-bottom: 40px;
+  background-color: var(--color-blacklight);
+`;
+{
+  /* <motion.Main
+variants={fadeIn("up", 0.2)}
+initial="hidden"
+whileInView={"show"}
+viewport={{ once: false, amount: 0.7 }}
+> */
+}

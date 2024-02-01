@@ -32,25 +32,26 @@ function App() {
                 <Route
                   path="/"
                   element={
-                    // <ProtectedRouter>
-                    <HomePage />
-                    // </ProtectedRouter>
+                    <ProtectedRouter>
+                      <HomePage />
+                    </ProtectedRouter>
+                    //ProtectedRouter
                   }
                 />
                 <Route
                   path="/sign-in"
                   element={
-                    // <ProtectedRouterLogin>
-                    <SignIn />
-                    // </ProtectedRouterLogin>
+                    <ProtectedRouterLogin>
+                      <SignIn />
+                    </ProtectedRouterLogin>
                   }
                 />
                 <Route
                   path="/sign-up"
                   element={
-                    // <ProtectedRouterLogin>
-                    <SignUp />
-                    // </ProtectedRouterLogin>
+                    <ProtectedRouterLogin>
+                      <SignUp />
+                    </ProtectedRouterLogin>
                   }
                 />
                 <Route path="*" element={<Error />} />

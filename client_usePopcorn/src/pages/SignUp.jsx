@@ -1,8 +1,10 @@
 import styled from "styled-components";
-import { device } from "../ui/device";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { device } from "../ui/device";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { fadeInVariants } from "../ui/variation";
 // import { useMovie } from "../context/MovieContext";
 
 export function SignUp() {
@@ -84,58 +86,69 @@ export function SignUp() {
   }
 
   return (
-    <LoginContainer>
-      <StyledLogin>
-        <Stylecontent>
-          <div>
-            <H1>Sign up</H1>
-          </div>
-          <form onSubmit={handleSubmit}>
+    <motion.div
+      variants={fadeInVariants("up")}
+      initial="hidden"
+      animate="show"
+      exit="hidden"
+    >
+      <LoginContainer>
+        <StyledLogin>
+          <Stylecontent>
             <div>
-              <Input
-                type="text"
-                placeholder="Username"
-                name="userName"
-                onChange={handleChange}
-                value={field.userName}
-                onBlur={handleBlur}
-              />
-              {errors.userName && <Error>Username is required</Error>}
+              <H1>Sign up</H1>
             </div>
-            <div>
-              <Input
-                type="password"
-                placeholder="Password"
-                name="password"
-                onChange={handleChange}
-                value={field.password}
-                onBlur={handleBlur}
-              />
-              {errors.password && <Error>Password is required</Error>}
-              <Input
-                type="password"
-                placeholder="Confirm Password"
-                name="confirmPassword"
-                onChange={handleChange}
-                value={field.confirmPassword}
-                onBlur={handleBlur}
-              />
-              {errors.confirmPassword && <Error>Password is inCorrect</Error>}
-            </div>
-            <div>
-              <Button type="submit">Sign in</Button>
-            </div>
-          </form>
+            <form onSubmit={handleSubmit}>
+              <div>
+                <Input
+                  type="text"
+                  placeholder="Username"
+                  name="userName"
+                  onChange={handleChange}
+                  value={field.userName}
+                  onBlur={handleBlur}
+                />
+                {errors.userName && <Error>Username is required</Error>}
+              </div>
+              <div>
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  onChange={handleChange}
+                  value={field.password}
+                  onBlur={handleBlur}
+                />
+                {errors.password && <Error>Password is required</Error>}
+                <Input
+                  type="password"
+                  placeholder="Confirm Password"
+                  name="confirmPassword"
+                  onChange={handleChange}
+                  value={field.confirmPassword}
+                  onBlur={handleBlur}
+                />
+                {errors.confirmPassword && <Error>Password is inCorrect</Error>}
+              </div>
+              <div>
+                <Button type="submit">Sign in</Button>
+              </div>
+            </form>
 
-          <StyledSign>
-            <AlignCenter>
-              <p>Already have a account?</p>
-              &nbsp; <NavLink to="/sign-in"> Sign in now.</NavLink>
-            </AlignCenter>
-          </StyledSign>
-        </Stylecontent>
-      </StyledLogin>
-    </LoginContainer>
+            <StyledSign>
+              <AlignCenter>
+                <div>
+                  <p>Already have a account?</p>
+                </div>
+                <div>
+                  &nbsp; <NavLink to="/sign-in"> Sign in now.</NavLink>
+                </div>
+              </AlignCenter>
+            </StyledSign>
+          </Stylecontent>
+        </StyledLogin>
+      </LoginContainer>
+    </motion.div>
   );
 }
 
@@ -148,7 +161,7 @@ const LoginContainer = styled.div`
 `;
 
 const StyledLogin = styled.div`
-  background: var(--color-blacklight);
+  background: var(--color-login);
   width: 457px;
   height: 547px;
   border-radius: 4px;
@@ -182,7 +195,8 @@ const Stylecontent = styled.div`
   padding: 48px 60px 0px 60px;
   font-size: 15px;
   font-weight: 700;
-
+  margin-bottom: 40px;
+  gap: 20px;
   @media ${device.laptopL} {
     padding: 48px 60px 10px;
   }
@@ -200,7 +214,7 @@ const Stylecontent = styled.div`
   }
 `;
 const H1 = styled.h1`
-  color: var(--color-h1);
+  color: #fff;
   margin-bottom: 29px;
   font-size: 32px;
   @media ${device.laptop} {
@@ -279,10 +293,10 @@ const Button = styled.button`
   width: 100%;
   border: transparent;
   color: var(--color-light);
-  background-color: var(--color-btnsign);
+  background-color: #3730a3;
   border-radius: 4px;
   &:hover {
-    background-color: #bf030c;
+    background-color: #4823d8;
     transition: background 0.3s;
   }
   @media ${device.laptopL} {
@@ -350,9 +364,9 @@ const StyledSign = styled.div`
 const NavLink = styled(Link)`
   display: flex;
   cursor: pointer;
-  color: var(--color-textColor);
+  color: #fff;
   font-weight: 600;
-  color: var(--color-h1);
+  /* color: var(--color-h1); */
 `;
 
 const AlignCenter = styled.div`
@@ -360,4 +374,6 @@ const AlignCenter = styled.div`
   font-size: 12px;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+  color: #fff;
 `;

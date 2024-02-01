@@ -14,10 +14,11 @@ const GlobalThemes = createGlobalStyle`
       --color-inputFont: rgba(140, 140, 140, 1);
       --color-btnsign: rgba(229, 9, 20, 1);
       --color-blacklight: rgba(0, 0, 0, 0.75);
+      --color-login: rgba(0, 0, 0, 0.75);
       --color-bg: rgba(0, 0, 0, 0.15);
     }
     &.light-mode   {
-        --color-textColor: rgb(23, 23, 23);
+  --color-textColor:  rgba(255, 255, 255, 0.80);
   --color-logo:#3730a3
   --color-light: #ffffff;
   --color-description: rgb(23, 23, 23);
@@ -27,6 +28,7 @@ const GlobalThemes = createGlobalStyle`
   --color-inputFont: rgba(140, 140, 140, 1);
   --color-btnsign: rgba(229, 9, 20, 1);
   --color-blacklight: rgba(255, 255, 255, 0.80);
+  --color-login:  rgba(0, 0, 0,0.8);
   --color-bg: rgba(255, 255, 255, 0.10);
     }
   }

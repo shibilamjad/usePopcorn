@@ -1,13 +1,17 @@
 import styled from "styled-components";
+import ReactStars from "react-rating-stars-component";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
+import { motion } from "framer-motion";
+import { FaBookmark } from "react-icons/fa";
+import { useSearchParams } from "react-router-dom";
+
+import { Loading } from "../../ui/Loading";
 import { device } from "../../ui/device";
 import { useMovies } from "./useMovies";
-import { Loading } from "../../ui/Loading";
 import { ErrorMessage } from "../../ui/ErrorMessage";
-import ReactStars from "react-rating-stars-component";
-import { FaBookmark } from "react-icons/fa";
 import { PAGE_SIZE } from "../../utils/PAGE_SIZE";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
-import { useSearchParams } from "react-router-dom";
+import { fadeInVariants } from "../../ui/variation";
+
 export function MoviesList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const {
@@ -44,40 +48,47 @@ export function MoviesList() {
 
   return (
     <>
-      <StyledMovieList>
-        {movies.map((movie) => (
-          <Box key={movie._id}>
-            <StyledCard>
-              <StledContainer>
-                <div>
-                  <Img src={movie.image} alt={movie.title} />
-                </div>
-                <StyledContent>
-                  <h2 className="card-title">{movie.title}</h2>
-                  <StyledGenre>
-                    {movie.genre &&
-                      movie.genre.map((genre) => (
-                        <Genre key={genre._id}>{genre.title}</Genre>
-                      ))}
-                  </StyledGenre>
-                  <ReactStars
-                    count={5}
-                    size={24}
-                    value={movie.ratings}
-                    edit={false}
-                    activeColor="#ffd700"
-                  />
-                  <StyledButton>
-                    <AddButton>
-                      <FaBookmark />
-                    </AddButton>
-                  </StyledButton>
-                </StyledContent>
-              </StledContainer>
-            </StyledCard>
-          </Box>
-        ))}
-      </StyledMovieList>
+      <motion.div
+        variants={fadeInVariants("up")}
+        initial="hidden"
+        animate="show"
+        exit="hidden"
+      >
+        <StyledMovieList>
+          {movies.map((movie) => (
+            <Box key={movie._id}>
+              <StyledCard>
+                <StledContainer>
+                  <div>
+                    <Img src={movie.image} alt={movie.title} />
+                  </div>
+                  <StyledContent>
+                    <h2 className="card-title">{movie.title}</h2>
+                    <StyledGenre>
+                      {movie.genre &&
+                        movie.genre.map((genre) => (
+                          <Genre key={genre._id}>{genre.title}</Genre>
+                        ))}
+                    </StyledGenre>
+                    <ReactStars
+                      count={5}
+                      size={24}
+                      value={movie.ratings}
+                      edit={false}
+                      activeColor="#ffd700"
+                    />
+                    <StyledButton>
+                      <AddButton>
+                        <FaBookmark />
+                      </AddButton>
+                    </StyledButton>
+                  </StyledContent>
+                </StledContainer>
+              </StyledCard>
+            </Box>
+          ))}
+        </StyledMovieList>
+      </motion.div>
       <StyledPagination>
         <p>
           Showing <span>{(page - 1) * PAGE_SIZE + 1} </span>
