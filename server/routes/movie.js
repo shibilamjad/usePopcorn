@@ -13,7 +13,7 @@ const upload = multer({ dest: "uploads/" });
 
 router.get("/", movie);
 
-//get all movies with genre *(dashboard)
+// get all movies with genre *(dashboard)
 router.get("/genre", movieGenre);
 
 // get movie in client
@@ -25,7 +25,7 @@ router.post("/upload", addMovie);
 // movie create (dashboard)
 router.put("/updateMovie/:movieId", updateMovie);
 
-//Update Movie with Genre (dashboard)
+// Update Movie with Genre (dashboard)
 // router.put("/updateMovie&genre/:movieId", updateMovie);
 
 router.delete("/", deleteMovie);

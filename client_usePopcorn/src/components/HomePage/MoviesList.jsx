@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import ReactStars from "react-rating-stars-component";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
+import { HiChevronLeft, HiChevronRight, HiTrash } from "react-icons/hi2";
 import { motion } from "framer-motion";
-import { FaBookmark } from "react-icons/fa";
-import { useSearchParams } from "react-router-dom";
+import { FaBookmark, FaEye } from "react-icons/fa";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { Loading } from "../../ui/Loading";
 import { device } from "../../ui/device";
@@ -11,9 +11,20 @@ import { useMovies } from "./useMovies";
 import { ErrorMessage } from "../../ui/ErrorMessage";
 import { PAGE_SIZE } from "../../utils/PAGE_SIZE";
 import { fadeInVariants } from "../../ui/variation";
+import { useMovieUpdateContext } from "../../context/MovieUpdateContext";
+import { useAddWatchLater } from "../WatchLater/useAddWatchLater";
+import { Model } from "../../ui/Model";
+import { Box } from "../../ui/Box";
+import { useWatchLater } from "../WatchLater/useWatchLater";
+import { useDeleteWatchLater } from "../WatchLater/useDeleteWatchList";
 
 export function MoviesList() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { addWatchLater } = useAddWatchLater();
+  const { watchLater } = useWatchLater();
+  const { deleateWatch } = useDeleteWatchLater();
+
   const {
     pageCount: totalPage,
     movies,
@@ -24,6 +35,7 @@ export function MoviesList() {
     page: currentPage,
   } = useMovies();
 
+  // pagination
   const page = Number(searchParams.get("page")) || 1;
   const pageCount = Math.ceil(limit / PAGE_SIZE);
 
@@ -41,54 +53,75 @@ export function MoviesList() {
     }
   }
 
+  // addwatchLater
+
+  function handleAddWatchLater(movieId) {
+    try {
+      const alreadySelected = watchLater.find((item) => item._id === movieId);
+      if (alreadySelected) {
+        // delete
+        console.log("click");
+        return deleateWatch(movieId);
+      }
+
+      // add watchlist
+      addWatchLater(movieId);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   if (pageCount <= 1) return null;
   if (isLoading) return <Loading />;
   if (error) return <ErrorMessage />;
-  console.log(movies);
+  // console.log(selectedWatchLater);
 
   return (
-    <>
-      <motion.div
-        variants={fadeInVariants("up")}
-        initial="hidden"
-        animate="show"
-        exit="hidden"
-      >
-        <StyledMovieList>
-          {movies.map((movie) => (
-            <Box key={movie._id}>
-              <StyledCard>
-                <StledContainer>
-                  <div>
-                    <Img src={movie.image} alt={movie.title} />
-                  </div>
-                  <StyledContent>
-                    <h2 className="card-title">{movie.title}</h2>
-                    <StyledGenre>
-                      {movie.genre &&
-                        movie.genre.map((genre) => (
-                          <Genre key={genre._id}>{genre.title}</Genre>
-                        ))}
-                    </StyledGenre>
-                    <ReactStars
-                      count={5}
-                      size={24}
-                      value={movie.ratings}
-                      edit={false}
-                      activeColor="#ffd700"
-                    />
-                    <StyledButton>
-                      <AddButton>
-                        <FaBookmark />
-                      </AddButton>
-                    </StyledButton>
-                  </StyledContent>
-                </StledContainer>
-              </StyledCard>
-            </Box>
-          ))}
-        </StyledMovieList>
-      </motion.div>
+    <motion.div
+      variants={fadeInVariants("up")}
+      initial="hidden"
+      animate="show"
+      exit="hidden"
+    >
+      <Model>
+        {movies.map((movie) => (
+          <Box key={movie._id}>
+            <div>
+              <Img src={movie.image} alt={movie.title} />
+            </div>
+            <StyledContent>
+              <h2 className="card-title">{movie.title}</h2>
+              <StyledGenre>
+                {movie.genre &&
+                  movie.genre.map((genre) => (
+                    <Genre key={genre._id}>{genre.title}</Genre>
+                  ))}
+              </StyledGenre>
+              <ReactStars
+                count={5}
+                size={24}
+                value={movie.ratings}
+                edit={false}
+                activeColor="#ffd700"
+              />
+              <StyledButton>
+                {watchLater &&
+                watchLater.some(
+                  (watchLaterMovie) => watchLaterMovie._id === movie._id
+                ) ? (
+                  <AddButton onClick={() => navigate("/watchLater")}>
+                    <FaEye />
+                  </AddButton>
+                ) : (
+                  <AddButton onClick={() => handleAddWatchLater(movie._id)}>
+                    <FaBookmark />
+                  </AddButton>
+                )}
+              </StyledButton>
+            </StyledContent>
+          </Box>
+        ))}
+      </Model>
       <StyledPagination>
         <p>
           Showing <span>{(page - 1) * PAGE_SIZE + 1} </span>
@@ -96,7 +129,7 @@ export function MoviesList() {
           <span>
             {page === totalPage
               ? (page - 1) * PAGE_SIZE + movies.length
-              : currentPage * PAGE_SIZE}{" "}
+              : currentPage * PAGE_SIZE}
           </span>
           results
         </p>
@@ -111,69 +144,15 @@ export function MoviesList() {
           </PaginationButton>
         </Buttons>
       </StyledPagination>
-    </>
+    </motion.div>
   );
 }
-const StyledMovieList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 50px;
-  margin-bottom: 10px;
-`;
 
-const Box = styled.div`
-  width: 400px;
-  background-color: #3730a3;
-  border-radius: 10px;
-
-  @media ${device.laptopL} {
-    width: 400px;
-    transition: all 0.5;
-  }
-  @media ${device.laptop} {
-    width: 400px;
-
-    transition: all 0.5;
-  }
-  @media ${device.tablet} {
-    width: 400px;
-
-    transition: all 0.5;
-  }
-  @media ${device.mobileL} {
-    width: 260px;
-    /* height: 100%; */
-    transition: all 0.5;
-  }
-  @media ${device.mobileS} {
-    width: 260px;
-    /* height: 100%; */
-    transition: all 0.5;
-  }
-`;
-
-const StyledCard = styled.div`
-  width: 100%;
-  height: 290px;
-  border-radius: 10px;
-  transition: all 0.5s;
-  img {
-    width: 100%;
-    height: 290px;
-    border-radius: 10px 0 0 10px;
-  }
-`;
 const Img = styled.img`
   width: 100%;
   height: 100%;
 `;
-const StledContainer = styled.div`
-  display: grid;
-  border-radius: 10px;
-  grid-template-columns: 1fr 1fr;
-`;
+
 const StyledContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -206,10 +185,15 @@ const StyledButton = styled.div`
 const AddButton = styled.button`
   padding: 5px;
   border-radius: 4px;
+
   background-color: #3730a3;
   color: #fff;
   border: transparent;
 
+  svg {
+    height: 30px;
+    width: 30px;
+  }
   &:focus,
   &:hover {
     background-color: #fff;
@@ -222,7 +206,7 @@ const StyledPagination = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   margin-top: 30px;
   margin-bottom: 40px;
 
@@ -253,12 +237,12 @@ const Buttons = styled.div`
 
 const PaginationButton = styled.button`
   background-color: ${(props) => (props.active ? "#3730a3;" : "#3730a3;")};
-  color: ${(props) => (props.active ? " var(--color-light)" : "inherit")};
+  /* color: ${(props) => (props.active ? " var(--color-light)" : "inherit")}; */
   border: 1px solid ${(props) => (props.active ? "#3730a3;" : "#3730a3;")};
   border-radius: 5px;
   font-weight: 500;
   font-size: 1.4rem;
-
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;

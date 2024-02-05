@@ -1,149 +1,84 @@
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-import { useState } from "react";
-import { device } from "../ui/device";
-import { useAuth } from "../context/AuthContext";
-import { fadeInVariants } from "../ui/variation";
-// import { useMovie } from "../context/MovieContext";
+import { device } from "../../ui/device";
+import { useLogin } from "./useLogin";
+import { useForm } from "react-hook-form";
 
 export function SignIn() {
-  const [field, setField] = useState({
-    userName: "",
-    password: "",
-  });
-  const [errors, setErrors] = useState({
-    userName: false,
-    password: false,
-  });
+  const { login, isLoading } = useLogin();
 
-  // const { isLoading, setQuery } = useMovie();
-  const { setIsLoggedIn } = useAuth();
-
-  const navigate = useNavigate();
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (isValidateSubmit()) {
-      setIsLoggedIn(true);
-      navigate("/");
+  const { register, handleSubmit, formState } = useForm();
+  const { errors } = formState;
+  async function onSubmit(data) {
+    try {
+      await login(data);
+    } catch (error) {
+      console.error("Login Error:", error);
     }
-    // setQuery("");
   }
 
-  // console.log(isLoading);
-  function handleChange(e) {
-    setField((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-    handleBlur(e);
-  }
-
-  function isValidateSubmit() {
-    const errors = {
-      userName: false,
-      password: false,
-    };
-
-    if (field.userName === "") {
-      errors.userName = true;
-    }
-
-    if (field.password === "") {
-      errors.password = true;
-    }
-
-    if (field.password.length < 6) {
-      errors.password = true;
-    }
-    setErrors(errors);
-    if (Object.values(errors).some((err) => err === true)) {
-      return false;
-    }
-    return true;
-  }
-
-  function handleBlur(e) {
-    const { name, value } = e.target;
-    let error = false;
-    if (name === "userName" && value === "") {
-      error = true;
-    } else if (name === "password" && value === "") {
-      error = true;
-    } else if (name === "password" && value.length < 6) {
-      error = true;
-    }
-    setErrors((prev) => ({
-      ...prev,
-      [name]: error,
-    }));
-  }
+  if (isLoading) return <div>isLoading...</div>;
 
   return (
-    <motion.div
-      variants={fadeInVariants("up")}
-      initial="hidden"
-      animate="show"
-      exit="hidden"
-    >
-      <LoginContainer>
-        <StyledLogin>
-          <Stylecontent>
+    <LoginContainer>
+      <StyledLogin>
+        <Stylecontent>
+          <div>
+            <H1>Sign in</H1>
+          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div>
-              <H1>Sign in</H1>
+              <Input
+                type="email"
+                placeholder="Email"
+                id="email"
+                {...register("email", {
+                  required: "This field is required",
+                  pattern: {
+                    value: /\S+@\S+\.\S+/,
+                    message: "Please provide a valid email address",
+                  },
+                })}
+              />
+              {errors.email && <Error>{errors?.email?.message}</Error>}
             </div>
-            <form onSubmit={handleSubmit}>
-              <div>
-                <Input
-                  type="text"
-                  placeholder="Username"
-                  name="userName"
-                  onChange={handleChange}
-                  value={field.userName}
-                  onBlur={handleBlur}
-                />
-                {errors.userName && <Error>Username is required</Error>}
-              </div>
-              <div>
-                <Input
-                  type="password"
-                  placeholder="Password"
-                  name="password"
-                  onChange={handleChange}
-                  value={field.password}
-                  onBlur={handleBlur}
-                />
-                {errors.password &&
-                  (field.password === "" ? (
-                    <Error>Password is required</Error>
-                  ) : (
-                    <Error>Password must be at least 6 characters</Error>
-                  ))}
-              </div>
-              <div>
-                <Button type="submit">Sign in</Button>
-              </div>
-            </form>
             <div>
-              <P>Forgot Pasword?</P>
+              <Input
+                type="password"
+                placeholder="Password"
+                id="password"
+                {...register("password", {
+                  required: "This field is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password needs a minimum of 6 characters",
+                  },
+                })}
+              />
+              {errors.password && <Error>{errors?.password?.message}</Error>}
             </div>
-            <StyledSign>
-              <AlignCenter>
-                <div>
-                  <p>Not a member? </p>
-                </div>
-                <div>
-                  &nbsp;
-                  <NavLink to="/sign-up"> Sign up now.</NavLink>
-                </div>
-              </AlignCenter>
-            </StyledSign>
-          </Stylecontent>
-        </StyledLogin>
-      </LoginContainer>
-    </motion.div>
+            <div>
+              <Button type="submit">Sign in</Button>
+            </div>
+          </form>
+          <div>
+            <P>Forgot Pasword?</P>
+          </div>
+          <StyledSign>
+            <AlignCenter>
+              <div>
+                <p>Not a member? </p>
+              </div>
+              <div>
+                &nbsp;
+                <NavLink to="/sign-up"> Sign up now.</NavLink>
+              </div>
+            </AlignCenter>
+          </StyledSign>
+        </Stylecontent>
+      </StyledLogin>
+    </LoginContainer>
   );
 }
 
@@ -282,6 +217,7 @@ const Error = styled.p`
   font-size: 12px;
   color: var(--color-btnsign);
   font-weight: 300;
+  margin-bottom: 10px;
 `;
 const Button = styled.button`
   font-size: 16px;

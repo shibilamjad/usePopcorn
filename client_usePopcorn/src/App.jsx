@@ -1,16 +1,20 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { SignIn } from "./pages/SignIn";
 import AppLayout from "./components/AppLayout";
 import { SignUp } from "./pages/SignUp";
-import { ProtectedRouter } from "./components/ProtectedRouter";
-import { ProtectedRouterLogin } from "./components/ProtectedRouterLogin";
 import { Error } from "./pages/Error";
 import GlobalThemes from "./style/GlobalThemes";
 import { DarkModeProvider } from "./context/DarkModeContext";
 import { HomePage } from "./pages/HomePage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
+import { Toaster } from "react-hot-toast";
+import { Login } from "./pages/Login";
+import {
+  ProtectedRoutesHomePage,
+  ProtectedRoutesWatchLater,
+} from "./components/ProtectedRoutes ";
+import ProtectedRouterAfterLogIn from "./components/ProtectedRouterAfterLogIn ";
+import { WatchLater } from "./components/WatchLater/WatchLater";
 const queryCLient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -32,32 +36,61 @@ function App() {
                 <Route
                   path="/"
                   element={
-                    <ProtectedRouter>
+                    <ProtectedRoutesHomePage>
                       <HomePage />
-                    </ProtectedRouter>
+                    </ProtectedRoutesHomePage>
+                    //ProtectedRouter
+                  }
+                />
+                <Route
+                  path="/watchLater"
+                  element={
+                    <ProtectedRoutesWatchLater>
+                      <WatchLater />
+                    </ProtectedRoutesWatchLater>
                     //ProtectedRouter
                   }
                 />
                 <Route
                   path="/sign-in"
                   element={
-                    <ProtectedRouterLogin>
-                      <SignIn />
-                    </ProtectedRouterLogin>
+                    <ProtectedRouterAfterLogIn>
+                      <Login />
+                    </ProtectedRouterAfterLogIn>
                   }
                 />
                 <Route
                   path="/sign-up"
                   element={
-                    <ProtectedRouterLogin>
+                    <ProtectedRouterAfterLogIn>
                       <SignUp />
-                    </ProtectedRouterLogin>
+                    </ProtectedRouterAfterLogIn>
                   }
                 />
                 <Route path="*" element={<Error />} />
               </Route>
             </Routes>
           </BrowserRouter>
+          <Toaster
+            position="top-center"
+            gutter={12}
+            containerStyle={{ margin: "8px" }}
+            toastOptions={{
+              success: {
+                duration: 3000,
+              },
+              error: {
+                duration: 3000,
+              },
+              style: {
+                fontSize: "16px",
+                maxWidth: "500px",
+                padding: "16px 24px",
+                backgroundColor: "#fff",
+                color: "#272727",
+              },
+            }}
+          />
         </DarkModeProvider>
       </QueryClientProvider>
     </>

@@ -10,9 +10,6 @@ export function Header() {
           <div>
             <h1>Dashboard</h1>
           </div>
-          <div>
-            <NavLink to="login">Login</NavLink>
-          </div>
         </StyledHeader>
       </header>
     </>

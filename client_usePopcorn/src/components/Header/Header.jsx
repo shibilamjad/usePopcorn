@@ -1,25 +1,26 @@
 import styled, { css } from "styled-components";
 import { motion } from "framer-motion";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaRegMoon } from "react-icons/fa";
 import { BsFillSunFill } from "react-icons/bs";
 
 import { fadeInVariants } from "../../ui/variation";
 import { device } from "../../ui/device";
-import { useAuth } from "../../context/AuthContext";
 import { useDarkMode } from "../../context/DarkModeContext";
+import { useLogout } from "../SignIn/useLogout";
+import { useLogin } from "../SignIn/useLogin";
 
 function Header() {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { theme, handleClick: handleDarkMode } = useDarkMode();
+  const { logout, isLoading } = useLogout();
+  const { isLogged } = useLogin();
+  const userId = localStorage.getItem("token");
+  const navigate = useNavigate();
 
-  function handleClick() {
-    setIsLoggedIn((prev) => !prev);
+  function handleLogout() {
+    logout();
   }
-  /*   variants={fadeIn("down", 0.2)}
-  initial="hidden"
-  whileInView={"show"}
-  viewport={{ once: false, amount: 0.7 }} */
+  console.log(isLogged);
   return (
     <header>
       <HeaderContainer>
@@ -37,19 +38,24 @@ function Header() {
           animate="show"
           exit="hidden"
         >
-          <BtnContainer>
-            <BtnMode variation="mode">Bookmark</BtnMode>
-            <BtnMode variation="mode" onClick={handleDarkMode}>
-              {theme ? <FaRegMoon /> : <BsFillSunFill />}
-            </BtnMode>
-            <NavLink to="sign-in">
-              {isLoggedIn && (
-                <BtnMode variation="logout" onClick={handleClick}>
-                  Logout
-                </BtnMode>
-              )}
-            </NavLink>
-          </BtnContainer>
+          {userId && (
+            <BtnContainer>
+              <BtnMode variation="mode" onClick={() => navigate("/watchLater")}>
+                WatchLater
+              </BtnMode>
+              <BtnMode variation="mode" onClick={handleDarkMode}>
+                {theme ? <FaRegMoon /> : <BsFillSunFill />}
+              </BtnMode>
+
+              <BtnMode
+                disabled={isLoading}
+                onClick={handleLogout}
+                variation="logout"
+              >
+                Logout
+              </BtnMode>
+            </BtnContainer>
+          )}
         </motion.div>
       </HeaderContainer>
     </header>

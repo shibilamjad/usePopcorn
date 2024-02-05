@@ -1,3 +1,5 @@
+import { SignIn } from "../features/Authentication/SignIn";
+
 export function Login() {
-  return <div>Login</div>;
+  return <SignIn />;
 }

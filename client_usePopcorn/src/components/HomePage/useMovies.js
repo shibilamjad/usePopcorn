@@ -21,7 +21,6 @@ export function useMovies() {
 
   const pageCounts = Math.ceil(limit / PAGE_SIZE);
   if (currentPage <= pageCounts - 1) {
-    console.log("Prefetching next page:", page + 1);
     queryClient.prefetchQuery({
       queryKey: ["movies", page + 1],
       queryFn: () => getMovies({ page: page + 1 }),
@@ -29,7 +28,6 @@ export function useMovies() {
   }
 
   if (currentPage > 1) {
-    console.log("Prefetching previous page:", page - 1);
     queryClient.prefetchQuery({
       queryKey: ["movies", page - 1],
       queryFn: () => getMovies({ page: page - 1 }),

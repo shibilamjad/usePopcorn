@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { Loader } from "../../ui/Loader";
 import { useGenre } from "../genre/useGenre";
 
-import { useEffect } from "react";
 import { useMovieCreate } from "./useMovieCreate";
 import { useMovieUpdate } from "./useMovieUpdate";
 import { useMovieUpdateContext } from "../../context/MovieUpdateContext";
@@ -21,29 +20,10 @@ export function CreateMovie() {
   const { isEditing, setIsEditing, selectedMovie, selectedMovieId } =
     useMovieUpdateContext();
 
-  // const isEditSession = Boolean(selectedMovieId);
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors, isSubmitSuccessful },
-  //   setValue,
-  //   reset,
-  //   watch,
-  // } = useForm({
-  //   defaultValues: isEditSession
-  //     ? {
-  //         _id: selectedMovie._id || "",
-  //         image: selectedMovie.image || "",
-  //         title: selectedMovie.title || "",
-  //         ratings: selectedMovie.ratings || 1,
-  //       }
-  //     : {},
-  // });
-
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
     setValue,
     reset,
     watch,

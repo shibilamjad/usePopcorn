@@ -1,34 +1,45 @@
-import { createContext, useContext, useEffect, useState } from "react";
-export const AuthContext = createContext();
+// import { createContext, useEffect, useState } from "react";
+// import useLocalStorage from "../hooks/useLocalStorage";
 
-function AuthProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    const isAuth = localStorage.getItem("isLoggedIn");
-    if (isAuth) {
-      return JSON.parse(isAuth);
-    } else {
-      return false;
-    }
-  });
+// export const AuthContext = createContext(null);
 
-  useEffect(
-    function () {
-      localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
-    },
-    [isLoggedIn]
-  );
+// export const AuthContextProvider = (props) => {
+//   const [isAuth, setIsAuth] = useState(false);
+//   const [authError, setAuthError] = useState("");
+//   const { handleGetLocalStorage } = useLocalStorage("token");
+
+//   useEffect(() => {
+//     // const token = localStorage.getItem("token");
+//     const token = handleGetLocalStorage("token");
+//     token != "" && setIsAuth(true);
+//   }, []);
+
+//   return (
+//     <AuthContext.Provider value={{ isAuth, authError }}>
+//       {props.children}
+//     </AuthContext.Provider>
+//   );
+// };
+import React, { createContext, useContext, useState } from "react";
+
+export const AuthContext = createContext(null);
+
+export const AuthProvider = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        setIsAuthenticated,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used with a AuthProvider");
-  }
-  return context;
-}
-export { AuthProvider, useAuth };
+// Custom hook
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

@@ -16,7 +16,7 @@ router.post("/", addGenre);
 // Update genre
 router.put("/:id", updateGenre);
 
-//delete genre
+// delete genre
 router.delete("/", deleteGenre);
 
 module.exports = router;

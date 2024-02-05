@@ -15,6 +15,8 @@ import { AppLayout } from "./ui/AppLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { MovieUpdateProvider } from "./context/MovieUpdateContext";
+import { ProtectedRoutesHomePage } from "./features/ProtectedRoutes ";
+import ProtectedRouterAfterLogIn from "./features/ProtectedRouterAfterLogIn ";
 
 const queryCLient = new QueryClient({
   defaultOptions: {
@@ -30,14 +32,27 @@ function App() {
       <MovieUpdateProvider>
         <BrowserRouter>
           <Routes>
-            <Route element={<AppLayout />}>
+            <Route
+              element={
+                <ProtectedRoutesHomePage>
+                  <AppLayout />
+                </ProtectedRoutesHomePage>
+              }
+            >
               <Route index element={<Navigate replace to="dashboard" />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="movie" element={<Movies />} />
               <Route path="movie/:movieId" element={<Movies />} />
               <Route path="genre" element={<Genre />} />
             </Route>
-            <Route path="login" element={<Login />} />
+            <Route
+              path="login"
+              element={
+                <ProtectedRouterAfterLogIn>
+                  <Login />
+                </ProtectedRouterAfterLogIn>
+              }
+            />
           </Routes>
         </BrowserRouter>
         <Toaster
