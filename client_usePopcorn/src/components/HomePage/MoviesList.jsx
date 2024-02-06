@@ -11,12 +11,13 @@ import { useMovies } from "./useMovies";
 import { ErrorMessage } from "../../ui/ErrorMessage";
 import { PAGE_SIZE } from "../../utils/PAGE_SIZE";
 import { fadeInVariants } from "../../ui/variation";
-import { useMovieUpdateContext } from "../../context/MovieUpdateContext";
 import { useAddWatchLater } from "../WatchLater/useAddWatchLater";
 import { Model } from "../../ui/Model";
 import { Box } from "../../ui/Box";
 import { useWatchLater } from "../WatchLater/useWatchLater";
 import { useDeleteWatchLater } from "../WatchLater/useDeleteWatchList";
+import { MovieFilterGenre } from "../../ui/MovieFilterGenre";
+import { Empty } from "../../ui/Empty";
 
 export function MoviesList() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -71,6 +72,7 @@ export function MoviesList() {
     }
   }
 
+  if (movies.length === 0) return <Empty>Movies not available</Empty>;
   if (pageCount <= 1) return null;
   if (isLoading) return <Loading />;
   if (error) return <ErrorMessage />;
@@ -83,6 +85,7 @@ export function MoviesList() {
       animate="show"
       exit="hidden"
     >
+      <MovieFilterGenre />
       <Model>
         {movies.map((movie) => (
           <Box key={movie._id}>

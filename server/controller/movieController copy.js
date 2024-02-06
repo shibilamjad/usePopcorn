@@ -45,110 +45,6 @@ const movies = async (req, res) => {
     });
   }
 };
-
-// filter
-
-const filterMovie = async (req, res) => {
-  // const { genre } = req.body.genre.split(",");
-  const { ratings, genre } = req.body;
-  try {
-    // Pagination
-    const { page, limit } = req.query;
-    let skip = 0;
-    if (page > 1) {
-      skip = +limit * (page - 1);
-    }
-
-    const query = {};
-    if (genre && genre != "all") {
-      const getGeneresId = await Genres.find({
-        title: { $in: [...genre] },
-      });
-      const listOfIds = getGeneresId?.map((item) => {
-        return item._id;
-      });
-      query.genre = { $in: [...listOfIds] };
-    }
-    if (ratings) {
-      query.ratings = { $lte: ratings };
-    }
-
-    const movieList = await Movies.find(query)
-      .populate({ path: "genre", select: ["title"] })
-      .sort(query.rating ? { rating: "desc" } : null)
-      .skip(skip)
-      .limit(limit)
-      .exec();
-
-    const moviesCount = await Movies.find(query).countDocuments({});
-    const pageCount = Math.ceil(moviesCount / +limit) || 1;
-
-    res.status(200).json({ movieList, pageCount, page });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: `Error fetching movies: ${error.message}` });
-  }
-};
-
-// const filterMovie = async (req, res) => {
-//   const { ratings, genre } = req.body;
-//   try {
-//     // Pagination
-//     const { page, limit } = req.query;
-//     let skip = 0;
-//     if (page > 1) {
-//       skip = +limit * (page - 1);
-//     }
-
-//     const query = {};
-//     if (ratings) {
-//       query.ratings = {
-//         $gte: ratings,
-//       };
-//     }
-
-//     if (genre && genre.length > 0) {
-//       // Convert genre names to ObjectId references
-//       const genreIds = await Genres.find({ name: { $in: genre } }).select(
-//         "_id"
-//       );
-//       query.genre = {
-//         $in: genreIds.map((genre) => genre._id),
-//       };
-//     }
-
-//     const movieList = await Movies.find(query)
-//       .populate("genre")
-//       .sort({ ratings: 1 }) // Sort by ratings ascending
-//       .skip(skip)
-//       .limit(+limit) // Convert limit to a number
-//       .exec();
-
-//     const moviesCount = await Movies.find(query).countDocuments({});
-//     const pageCount = Math.ceil(moviesCount / +limit) || 1;
-
-//     res.status(200).json({ movieList, pageCount, page });
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: `Error fetching movies: ${error.message}` });
-//   }
-// };
-const getfilterMovie = async (req, res) => {
-  const { ratings, genre } = req.body;
-  const { page = 1, limit = 8 } = req.query;
-  try {
-    const {
-      movieList,
-      pageCount,
-      page: currentPage,
-    } = await filterMovie(page, limit, ratings, genre);
-    res.status(200).json({ movieList, pageCount, page: currentPage });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 const movieGenre = async (req, res) => {
   try {
     const movieList = await Movies.find()
@@ -273,6 +169,4 @@ module.exports = {
   updateMovie,
   deleteMovie,
   movies,
-  filterMovie,
-  getfilterMovie,
 };

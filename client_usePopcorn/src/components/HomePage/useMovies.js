@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMovies } from "../../service/movieApi";
+import { getFilterMovies, getMovies } from "../../service/movieApi";
 import { useSearchParams } from "react-router-dom";
 import { PAGE_SIZE } from "../../utils/PAGE_SIZE";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function useMovies() {
   const [searchParams] = useSearchParams();
@@ -33,6 +33,18 @@ export function useMovies() {
       queryFn: () => getMovies({ page: page - 1 }),
     });
   }
+
+  useEffect(() => {
+    return () => {
+      queryClient.cancelQueries(["movies", page + 1]);
+      queryClient.cancelQueries(["movies", page - 1]);
+    };
+  }, []);
+
+  useEffect(() => {
+    setPage(currentPage);
+  }, [currentPage]);
+
   return {
     error,
     movies,

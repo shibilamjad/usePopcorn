@@ -11,6 +11,7 @@ import { Box } from "../../ui/Box";
 import { Link } from "react-router-dom";
 import { HiTrash } from "react-icons/hi2";
 import { useDeleteWatchLater } from "./useDeleteWatchList";
+import { Empty } from "../../ui/Empty";
 
 export function WatchLater() {
   const { isLoading, watchLater } = useWatchLater();
@@ -26,6 +27,7 @@ export function WatchLater() {
 
   console.log(watchLater);
   if (isLoading) return <Loading />;
+  if (watchLater.length === 0) return <Empty>Empty :(</Empty>;
   return (
     <>
       <motion.div
