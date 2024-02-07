@@ -32,7 +32,7 @@ const Boxs = styled.div`
   }
   @media ${device.mobileL} {
     width: 260px;
-    /* height: 100%; */
+    height: 350px;
     transition: all 0.5;
   }
   @media ${device.mobileS} {
@@ -51,6 +51,27 @@ const StyledCard = styled.div`
     width: 100%;
     height: 290px;
     border-radius: 10px 0 0 10px;
+    @media ${device.laptop} {
+      width: 100%;
+      height: 290px;
+      border-radius: 10px 0 0 10px;
+    }
+    @media ${device.tablet} {
+      width: 100%;
+      height: 290px;
+      border-radius: 10px 0 0 10px;
+    }
+    @media ${device.mobileL} {
+      width: 100%;
+      height: 350px;
+
+      border-radius: 10px 0 0 10px;
+    }
+    @media ${device.mobileS} {
+      width: 100%;
+      height: 350px;
+      border-radius: 10px 0 0 10px;
+    }
   }
 `;
 const StledContainer = styled.div`

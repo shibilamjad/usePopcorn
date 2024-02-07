@@ -49,11 +49,3 @@ const GapHeader = styled.div`
   padding-bottom: 40px;
   background-color: var(--color-blacklight);
 `;
-{
-  /* <motion.Main
-variants={fadeIn("up", 0.2)}
-initial="hidden"
-whileInView={"show"}
-viewport={{ once: false, amount: 0.7 }}
-> */
-}

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import ReactStars from "react-rating-stars-component";
-import { HiChevronLeft, HiChevronRight, HiTrash } from "react-icons/hi2";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { motion } from "framer-motion";
 import { FaBookmark, FaEye } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -25,7 +25,6 @@ export function MoviesList() {
   const { addWatchLater } = useAddWatchLater();
   const { watchLater } = useWatchLater();
   const { deleateWatch } = useDeleteWatchLater();
-
   const {
     pageCount: totalPage,
     movies,
@@ -35,22 +34,25 @@ export function MoviesList() {
     setPage,
     page: currentPage,
   } = useMovies();
-
   // pagination
   const page = Number(searchParams.get("page")) || 1;
   const pageCount = Math.ceil(limit / PAGE_SIZE);
 
   function nextPage() {
     if (currentPage < totalPage) {
-      setPage((prev) => prev + 1);
-      setSearchParams({ page: currentPage + 1 });
+      const nextPage = currentPage + 1;
+      setPage(nextPage);
+      searchParams.set("page", nextPage);
+      setSearchParams(searchParams);
     }
   }
 
   function prevPage() {
     if (currentPage > 1) {
-      setPage((prev) => prev - 1);
-      setSearchParams({ page: currentPage - 1 });
+      const prevPage = currentPage - 1;
+      setPage(prevPage);
+      searchParams.set("page", prevPage);
+      setSearchParams(searchParams);
     }
   }
 
@@ -76,7 +78,6 @@ export function MoviesList() {
   if (pageCount <= 1) return null;
   if (isLoading) return <Loading />;
   if (error) return <ErrorMessage />;
-  // console.log(selectedWatchLater);
 
   return (
     <motion.div
@@ -85,6 +86,7 @@ export function MoviesList() {
       animate="show"
       exit="hidden"
     >
+      {/* // filter */}
       <MovieFilterGenre />
       <Model>
         {movies.map((movie) => (

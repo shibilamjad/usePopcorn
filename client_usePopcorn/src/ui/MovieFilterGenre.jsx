@@ -1,61 +1,96 @@
 import styled from "styled-components";
 
-import SortBy from "./SortBy";
 import { device } from "./device";
 import { useGenre } from "../components/HomePage/useGenre";
-import { FilterRatings } from "./FilterRatings";
-import { PAGE_SIZE } from "../utils/PAGE_SIZE";
-import { useFilter } from "../components/HomePage/usefilter";
-import { useEffect } from "react";
+import { useMovies } from "../components/HomePage/useMovies";
+import { Loading } from "./Loading";
+import { ErrorMessage } from "./ErrorMessage";
+import { Empty } from "./Empty";
+import { useSearchParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+
+const ratingValue = [
+  { value: 5, label: "5 > 1" },
+  { value: 4, label: "4 > 1" },
+  { value: 3, label: "3 > 1" },
+  { value: 2, label: "2 > 1" },
+  { value: 1, label: "1" },
+];
 
 export function MovieFilterGenre() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [ratingsValues, setRatingsValues] = useState(ratingValue);
   const { genre } = useGenre();
-  const { filter } = useFilter();
+  const prevRatingsRef = useRef();
 
-  function handleGenreFilter(selectedOptions = []) {
-    const selectedGenres = selectedOptions.map((option) => option.value);
-    filter({ page: 1, limit: PAGE_SIZE, genre: selectedGenres });
+  const { isLoading, error, genre: genres, movies, ratings } = useMovies();
+
+  const genreValue = searchParams.get("genre") || "all";
+  const ratingValues = searchParams.get("ratings") || "";
+
+  function handleGenreFilter(event) {
+    const selectedGenre = event.target.value;
+    setSearchParams({ ...searchParams, genre: selectedGenre });
   }
-
-  function handleRatingFilter(ratings) {
-    filter({ page: 1, limit: PAGE_SIZE, ratings });
+  function handleRatingFilter(event) {
+    const selectedRatings = event.target.value;
+    setSearchParams({
+      ...searchParams,
+      ratings: selectedRatings,
+    });
   }
-
   useEffect(() => {
-    // Fetch filtered movies when the component mounts
-    filter();
-  }, [filter]);
+    prevRatingsRef.current = ratings;
+  }, [ratings]);
 
+  if (movies.length === 0) return <Empty>Movies not available</Empty>;
+  if (isLoading) return <Loading />;
+  if (error) return <ErrorMessage />;
   return (
     <TableOperations>
       <StyledDiv>
-        <span>Select Genre: </span>
         {genre && (
-          <SortBy
-            options={genre.map((item) => ({
-              value: item.title,
-              label: item.title,
-            }))}
-            handleGenreFilter={handleGenreFilter}
-          />
+          <Selects onChange={handleGenreFilter} value={genreValue}>
+            <option value="all">Select Genre</option>
+            {genre.map((item) => (
+              <option key={item._id} value={item.title}>
+                {item.title}
+              </option>
+            ))}
+          </Selects>
         )}
       </StyledDiv>
       <StyledDiv>
-        <span>Rating: </span>
-        <FilterRatings
-          options={[
-            { value: "5", label: "5" },
-            { value: "4", label: "4" },
-            { value: "3", label: "3" },
-            { value: "2", label: "2" },
-            { value: "1", label: "1" },
-          ]}
-          handleRatingFilter={handleRatingFilter}
-        />
+        {ratingsValues && (
+          <Selects onChange={handleRatingFilter} value={ratingValues}>
+            <option value="">Select ratings</option>
+            {ratingsValues.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </Selects>
+        )}
       </StyledDiv>
     </TableOperations>
   );
 }
+const Selects = styled.select`
+  padding: 10px;
+  background-color: #3730a3;
+  width: 200px;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 10px;
+  option {
+    color: #3730a3;
+    padding: 10px;
+    margin: 10px;
+    background-color: #fff;
+  }
+`;
+
 const TableOperations = styled.div`
   display: flex;
   flex-wrap: wrap;

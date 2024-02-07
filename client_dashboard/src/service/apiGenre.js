@@ -19,7 +19,7 @@ export async function createGenreApi(newGenre) {
         title: newGenre.genre,
       },
     });
-
+    console.log(res.data);
     const { data } = res;
     return data;
   } catch (error) {

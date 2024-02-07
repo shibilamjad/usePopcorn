@@ -1,72 +1,30 @@
 import axios from "axios";
 import { PAGE_SIZE } from "../utils/PAGE_SIZE";
 
-export async function getMovies({ page, limit }) {
+// Function to fetch all movies
+
+export async function getMovies({ page = 1, limit, ratings = 0, genre = [] }) {
   try {
-    const response = await axios.get(
-      `http://localhost:3006/api/movies/all?page=${page}&limit=${PAGE_SIZE}`
+    const response = await axios(
+      `http://localhost:3006/api/movies/all?page=${page}&limit=${PAGE_SIZE}&ratings=${ratings}&genre=${genre}`
     );
-    const { movieList, error, pageCount, page: pages } = response.data;
 
-    if (error) {
-      console.error(error);
-      throw new Error("Movies could not be loaded");
-    }
-
-    let data = movieList;
-    return { data, limit, pages, pageCount };
+    const {
+      movieList,
+      pageCount,
+      page: currentPage,
+      genre: selectedGenre,
+      ratings: selectedRatings,
+    } = response.data;
+    return {
+      data: movieList,
+      limit,
+      pageCount,
+      currentPage,
+      genre: selectedGenre,
+      ratings: selectedRatings,
+    };
   } catch (error) {
     throw new Error(`Error fetching movies: ${error.message}`);
   }
 }
-
-export async function getFilterMovies({ page, ratings, genre, limit }) {
-  try {
-    const response = await axios.post(
-      `http://localhost:3006/api/movies/filter-genre?page=${page}&limit=${limit}`,
-      {
-        ratings: ratings || 0,
-        genre: genre || [],
-      }
-    );
-
-    const { movieList, error, pageCount, page: pages } = response.data;
-
-    if (error) {
-      console.error(error);
-      throw new Error("Movies could not be loaded");
-    }
-    const movies = await getMovies({ page, limit });
-
-    return {
-      data: movies.data,
-      limit: movies.limit,
-      pages: movies.pages,
-      pageCount: movies.pageCount,
-    };
-  } catch (error) {
-    throw new Error(`Error fetching filtered movies: ${error.message}`);
-  }
-}
-// export async function getFilterMovies({ page, ratings, genre, limit }) {
-//   try {
-//     const response = await axios.post(
-//       `http://localhost:3006/api/movies/filter-genre?page=${page}&limit=${limit}`,
-//       {
-//         ratings: ratings || 0,
-//         genre: genre || [],
-//       }
-//     );
-
-//     const { movieList, error, pageCount, page: pages } = response.data;
-
-//     if (error) {
-//       console.error(error);
-//       throw new Error("Movies could not be loaded");
-//     }
-
-//     return { data: movieList, limit, pages, pageCount };
-//   } catch (error) {
-//     throw new Error(`Error fetching filtered movies: ${error.message}`);
-//   }
-// }
