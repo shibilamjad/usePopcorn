@@ -13,7 +13,6 @@ import { Genre } from "./pages/Genre";
 import { Login } from "./pages/Login";
 import { AppLayout } from "./ui/AppLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { MovieUpdateProvider } from "./context/MovieUpdateContext";
 import { ProtectedRoutesHomePage } from "./features/ProtectedRoutes ";
 import ProtectedRouterAfterLogIn from "./features/ProtectedRouterAfterLogIn ";
@@ -28,7 +27,6 @@ const queryCLient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryCLient}>
-      <ReactQueryDevtools initialIsOpen={false} />
       <MovieUpdateProvider>
         <BrowserRouter>
           <Routes>
