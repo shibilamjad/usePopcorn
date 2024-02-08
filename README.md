@@ -1,4 +1,4 @@
-# TMDB
+# usePopcorn🍟
 
 Full-stack movie app built with the MERN stack. Admin Panel helps Admin to add, delete and update movie data including title, poster image, rating and genre.
 Users can view movies list in usePopcorn🍟 App and they can add the movies into watch later . Pagination helps to restrict the number of movies listed in the page. Users can filter movies based on genres and rating.
