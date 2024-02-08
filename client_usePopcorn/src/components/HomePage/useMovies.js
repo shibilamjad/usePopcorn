@@ -58,17 +58,6 @@ export function useMovies() {
     });
   }
 
-  useEffect(() => {
-    return () => {
-      queryClient.cancelQueries(["movies", page + 1]);
-      queryClient.cancelQueries(["movies", page - 1]);
-    };
-  }, []);
-
-  useEffect(() => {
-    setPage(currentPage);
-  }, [currentPage]);
-
   return {
     error,
     movies,

@@ -27,16 +27,15 @@ const Boxs = styled.div`
   }
   @media ${device.tablet} {
     width: 400px;
-
     transition: all 0.5;
   }
   @media ${device.mobileL} {
-    width: 260px;
-    height: 350px;
+    width: 340px;
+    height: 370px;
     transition: all 0.5;
   }
   @media ${device.mobileS} {
-    width: 260px;
+    width: 280px;
     /* height: 100%; */
     transition: all 0.5;
   }
@@ -63,13 +62,12 @@ const StyledCard = styled.div`
     }
     @media ${device.mobileL} {
       width: 100%;
-      height: 350px;
-
+      height: 370px;
       border-radius: 10px 0 0 10px;
     }
     @media ${device.mobileS} {
       width: 100%;
-      height: 350px;
+      height: 370px;
       border-radius: 10px 0 0 10px;
     }
   }

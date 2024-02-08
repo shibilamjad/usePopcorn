@@ -116,7 +116,6 @@ const TableOperations = styled.div`
   @media ${device.mobileL} {
     display: flex;
     flex-wrap: wrap;
-    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     margin-right: 0px;

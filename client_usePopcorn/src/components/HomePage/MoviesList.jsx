@@ -196,8 +196,8 @@ const AddButton = styled.button`
   border: transparent;
 
   svg {
-    height: 30px;
-    width: 30px;
+    height: 20px;
+    width: 20px;
   }
   &:focus,
   &:hover {

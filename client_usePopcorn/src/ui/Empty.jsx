@@ -10,7 +10,7 @@ export function Empty({ children }) {
       </div>
       <div>
         <Button onClick={() => navigate("/")}>
-          Please selected some movies movies
+          Please selected some movies
         </Button>
       </div>
     </StyledEmpty>

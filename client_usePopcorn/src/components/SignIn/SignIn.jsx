@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { device } from "../../ui/device";
 import { useLogin } from "./useLogin";
 import { useForm } from "react-hook-form";
 import { ModelAuth } from "../../ui/ModelAuth";
@@ -17,6 +16,7 @@ import {
 
 export function SignIn() {
   const { login, isLoading } = useLogin();
+  const navigate = useNavigate();
 
   const { register, handleSubmit, formState } = useForm();
   const { errors } = formState;
@@ -70,9 +70,7 @@ export function SignIn() {
           <Button type="submit">Sign in</Button>
         </div>
       </form>
-      <div>
-        <P>Forgot Pasword?</P>
-      </div>
+
       <StyledSign>
         <AlignCenter>
           <div>
@@ -87,12 +85,3 @@ export function SignIn() {
     </ModelAuth>
   );
 }
-
-const P = styled.p`
-  display: flex;
-  justify-content: end;
-  font-size: 13px;
-  margin-top: 14px;
-  color: var(--color-textColor);
-  font-weight: 400;
-`;

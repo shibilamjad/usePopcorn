@@ -39,7 +39,6 @@ function App() {
                     <ProtectedRoutesHomePage>
                       <HomePage />
                     </ProtectedRoutesHomePage>
-                    //ProtectedRouter
                   }
                 />
                 <Route
@@ -48,7 +47,6 @@ function App() {
                     <ProtectedRoutesWatchLater>
                       <WatchLater />
                     </ProtectedRoutesWatchLater>
-                    //ProtectedRouter
                   }
                 />
                 <Route
@@ -67,6 +65,7 @@ function App() {
                     </ProtectedRouterAfterLogIn>
                   }
                 />
+
                 <Route path="*" element={<Error />} />
               </Route>
             </Routes>

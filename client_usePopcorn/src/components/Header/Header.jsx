@@ -96,6 +96,7 @@ const HeaderContainer = styled.div`
     align-items: center;
     justify-content: space-around;
     transition: all 0.3;
+    padding-bottom: 10px;
   }
   @media ${device.mobileS} {
     display: flex;
@@ -106,6 +107,7 @@ const HeaderContainer = styled.div`
     align-items: center;
     justify-content: space-between;
     transition: all 0.3;
+    padding-bottom: 10px;
   }
 `;
 
